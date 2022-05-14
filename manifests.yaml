@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: simple
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-api
+  namespace: simple
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-api
+  template:
+    metadata:
+      labels:
+        app: simple-api
+    spec:
+      containers:
+        - name: simple-api
+          image: simple-api:latest
+          env:
+            - name: STATUS_CODE
+              value: "404"
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-api
+  namespace: simple
+spec:
+  type: ClusterIP
+  selector:
+    app: simple-api
+  ports:
+    - port: 8000
+      targetPort: 8000
